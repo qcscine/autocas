@@ -1,0 +1,53 @@
+# test ci locally
+ci_test.sh
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+venv*
+*.egg-info/
+*.egg
+build/
+
+# Unit test / coverage reports
+.coverage
+.coverage.*
+.cache
+coverage.xml
+pytest_report.xml
+
+
+# Sphinx documentation
+docs/build/
+docs/source/generated/
+docs/source/additional_api/scine_autocas.rst
+
+# pytest
+.pytest_cache/
+
+# Editor files
+#mac
+.DS_Store
+*~
+
+#vim
+*.swp
+*.swo
+
+#pycharm
+.idea/
+
+#VSCode
+.vscode/
+
+#pdfs
+*.pdf
+
+# test folder
+test/*
+
+#mypy cache
+.mypy_cache/

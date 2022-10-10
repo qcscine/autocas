@@ -1,0 +1,20 @@
+molecule:
+  charge: 0
+  spin_multiplicity: 1
+  xyz_file: "/home/max/Programs/autoCAS/scine_autocas/tests/files/n2.xyz"
+interface:
+  interface: "molcas"
+  dump: True
+  project_name: "n2_test_correct"
+  environment:
+    molcas_scratch_dir: "/home/max/Programs/autoCAS/test/molcas_scratch"
+  settings:
+    basis_set: "cc-pvdz"
+    method: "cas-scf"
+    post_cas_method: "caspt2"
+    work_dir: "/home/max/Programs/autoCAS/test/autocas_project"
+    xyz_file: "/home/max/Programs/autoCAS/scine_autocas/tests/files/n2.xyz"
+    ipea: 0.0
+    uhf: False
+    fiedler: True
+    n_excited_states: 3

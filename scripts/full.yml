@@ -1,0 +1,89 @@
+---
+# Enable the large active space protocol.
+large_cas: False
+# Plots the entanglement diagram from the inital cas calculation.
+entanglement_diagram: "/path/to/entanglement_diagram.pdf"
+# The threshold diagram shows all thresholds from the provided
+# single orbital entropies.
+threshold_diagram: "/path/to/threshold_diagram.pdf"
+# In some large active space calculations, the active space can get
+# so large, that an ordinary entanglement diagram becomes too complex.
+# For a better overview this kind of diagram shows the entanglement of
+# all diagrams in the background and the entanglement of the selected
+# orbitals in an inner circle to provide a better overview.
+full_entanglement_diagram: "/path/to/full_entanglement_diagram.pdf"
+# Molecular system related settings.
+molecule:
+  # Total charge.
+  charge: 0
+  # Total spin multiplicity.
+  spin_multiplicity: 1
+  # For 3d transition metals, additionally include 4d orbitals in the initial
+  # active space.
+  double_d_shell: True
+  # The xyz-file of the molecule.
+  xyz_file: "/path/to/molecule.xyz"
+# General autocas settings.
+autocas:
+  # Required number of consecutive threshold steps to form a plateau to
+  # determine the active space.
+  plateau_values: 10
+  # One threshold step corresponds to a fraction of the maximal single orbital
+  # entropy.
+  threshold_step: 0.01
+  # Setting to define if a cas is necessary.
+  diagnostics:
+    # Any orbital with a s1 value below that threshold is directly excluded from cas.
+    weak_correlation_threshold: 0.02
+    # If maximum of s1 is below that threshold a single reference method might be better.
+    single_reference_threshold: 0.14
+  # Settings for large active space protocol. Only used if large_cas is enabled.
+  large_spaces:
+    # Maximum number of orbitals in a sub-cas.
+    max_orbitals: 4
+# Interface related settings.
+interface:
+  # Which interface to use. (Currently only molcas is implemented)
+  interface: "molcas"
+  # If interface should write output and all related files.
+  dump: True
+  # Name of the project, will be also used in some file names.
+  project_name: "autocas_project"
+  # Set molcas environment variables. All variables here respect already set global variables in
+  # the current session.
+  environment:
+    # Directory to store integrals and other molcas temporary files.
+    molcas_scratch_dir: "/path/to/molcas_scratch"
+  # Method related settings.
+  settings:
+    # DMRG bond dimension for the final dmrg run. To change a different bond dimension for
+    # the initial DMRG run, please see an provided example script. (autoCAS/scripts)
+    dmrg_bond_dimension: 1000
+    # Number of DMRG sweeps for the final DMRG run. To change a different bond dimension for
+    # the initial DMRG run, please see an provided example script. (autoCAS/scripts)
+    dmrg_sweeps: 10
+    # The basis set.
+    basis_set: "cc-pvdz"
+    # Method to evaluate the final active space.
+    method: "dmrg-scf"
+    # Method for dynamic correlation in the final calculation.
+    post_cas_method: "caspt2"
+    # Directory which contains folder hirachy made by autocas.
+    work_dir: "/path/to/autocas_project"
+    # The xyz-file, required for molcas input. Make sure this file is the same as
+    # defined above, or at least contains the same atoms.
+    xyz_file: "/path/to/molecule.xyz"
+    # Point group of the system.
+    point_group: "C1"
+    # IPEA shift for caspt2.
+    ipea: 0.0
+    # Enable Cholesky decomposition for integrals.
+    cholesky: True
+    # Enable unrestriced HF. If your provided system is open-shell with the corresponding
+    # charge and/or spin multiplicity uhf is enabled automatically.
+    uhf: False
+    # Enable fiedler ordering for DMRG.
+    fiedler: True
+    # Number of states. 0 means that this option is disabled. Hence
+    # 0 and 1 have the same meaning, that onlt the ground state is evaluated.
+    n_excited_states: 0

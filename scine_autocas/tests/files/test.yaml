@@ -1,0 +1,76 @@
+---
+# system related settings
+molecule: 
+  # total charge 
+  charge: 2
+  # total spin multiplicity
+  spin_multiplicity: 3
+  # determines if 4d orbitals correspond to the valence space or not
+  double_d_shell: True
+  # number of basis functions 
+  n_basis_functions: 24
+  # atoms
+  #atoms: ["H", "H", "Fe", "C", "H", "H"]
+  xyz_file: "files/n2.xyz"
+# general autocas settings
+autocas:
+  # required number of consecutive threshold steps to form a plateu
+  plateau_values: 20
+  # a threshold step in percent
+  threshold_step: 0.005
+  # setting to define if a cas is necessary
+  diagnostics:
+    # any orbital with a s1 value below that threshold is directly excluded from cas
+    weak_correlation_threshold: 0.03
+    # if maximum of s1 is below that threshold a single reference method might be better
+    single_reference_threshold: 0.15
+  # settings for large active space protocol 
+  large_spaces: 
+    # maximum number of orbitals in a sub-cas
+    max_orbitals: 25
+# interface related settings
+interface: 
+  # which interface to use
+  interface: "molcas"
+  # if interface should write output
+  dump: False
+  # name of the project 
+  project_name: "blub"
+  # number of excited states
+  n_excited_states: 4
+  #method related settings
+  settings:
+    # dmrg bond dimension for the next dmrg run 
+    dmrg_bond_dimension: 350
+    # number of dmrg sweeps for the next dmrg run 
+    dmrg_sweeps: 4
+    # basis set
+    basis_set: "6-31g"
+    # method to evaluate the next active space
+    method: "dmrg-scf"
+    # a method for dynamic correlation
+    post_cas_method: "caspt2"
+    # dir which contains folder hirachy made by autocas
+    work_dir: "/random/path/for/test"
+    # xyz file 
+    xyz_file: "files/n2.xyz"
+    # point group of the system 
+    point_group: "C2h"
+    # ci root string, required for excited states
+    #ci_root_string: ""
+    # ipea shift for caspt2
+    ipea: 1.1
+    # if orbital localisation should be done
+    orbital_localisation: True 
+    # space for orbital localisation 
+    localisation_space: "Virtual"
+    # method for localisation
+    localisation_method: "BOYS"
+    # if cholesky integrals should be used
+    cholesky: True
+    # if unrestriced HF should be used
+    uhf: True
+    # if fiedler ordering should be used in dmrg
+    fiedler: True
+    # number of excited states
+    n_excited_states: 4
