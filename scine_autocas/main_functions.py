@@ -179,7 +179,10 @@ class MainFunctions:
 
         self.results["final_occupation"] = final_occupation
         self.results["final_orbital_indices"] = final_orbital_indices
-        interface.dumper.large_cas = False
+        try:
+            interface.dumper.large_cas = False
+        except:
+            pass
 
         return final_occupation, final_orbital_indices
 
@@ -263,7 +266,10 @@ class MainFunctions:
 
         self.results["final_occupation"] = final_occupation
         self.results["final_orbital_indices"] = final_orbital_indices
-        interface.dumper.large_cas = False
+        try:
+            interface.dumper.large_cas = False
+        except:
+            pass
 
         return final_occupation, final_orbital_indices
 
