@@ -17,6 +17,7 @@ from scine_autocas import Autocas
 from scine_autocas.autocas_utils.molecule import Molecule
 from scine_autocas.interfaces import Interface
 from scine_autocas.interfaces.molcas import Molcas
+from scine_autocas.interfaces.chronusq import ChronusQ
 
 
 class InputHandler:
@@ -154,7 +155,12 @@ class InputHandler:
         if self.molecule is None:
             self.get_molecule()
         interface_settings = self.settings_dir["interface"]
-        self.interface = Molcas(
-            molecule=self.molecule, settings_dict=interface_settings
-        )
+        if self.settings_dir["interface"]["interface"] is not None and self.settings_dir["interface"]["interface"].lower() == "chronusq":
+            self.interface = ChronusQ(
+                molecule=self.molecule, settings_dict=interface_settings
+            )
+        else:
+            self.interface = Molcas(
+                molecule=self.molecule, settings_dict=interface_settings
+            )
         return self.interface
