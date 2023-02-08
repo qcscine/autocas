@@ -384,8 +384,8 @@ class Autocas:
         indices_list: List[List[int]],
         occupations_list: List[List[int]],
         s1_list: List[np.ndarray],
-        s2_list: List[np.ndarray] = None,
-        mut_inf_list: List[np.ndarray] = None,
+        s2_list: Optional[List[np.ndarray]] = None,
+        mut_inf_list: Optional[List[np.ndarray]] = None,
     ) -> Union[
         Tuple[np.ndarray, np.ndarray],
         Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray],

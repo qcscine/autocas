@@ -47,7 +47,7 @@ class TestMainClass(unittest.TestCase):
         mainfunctions = MainFunctions()
         molecule = Molecule(xyz_file=(self.path + "/files/n2.xyz"))
         autocas = Autocas(molecule=molecule)
-        molcas = Molcas(molecule=molecule)
+        molcas = Molcas(molecules=[molecule])
         molcas.project_name = "test_conventional"
         molcas.settings.work_dir = self.dummy_project_dir
         molcas.settings.xyz_file = self.path + "/files/n2.xyz"
@@ -69,7 +69,7 @@ class TestMainClass(unittest.TestCase):
         autocas = Autocas(molecule=molecule)
         autocas.large_spaces.seed = 1
         autocas.large_spaces.max_orbitals = 4
-        molcas = Molcas(molecule=molecule)
+        molcas = Molcas(molecules=[molecule])
         molcas.project_name = "test_large_cas"
         molcas.settings.work_dir = self.dummy_project_dir
         molcas.environment.molcas_scratch_dir = self.dummy_project_dir + "/scratch"
@@ -89,7 +89,7 @@ class TestMainClass(unittest.TestCase):
         mainfunctions = MainFunctions()
         molecule = Molecule(xyz_file=(self.path + "/files/n2.xyz"))
         autocas = Autocas(molecule=molecule)
-        molcas = Molcas(molecule=molecule)
+        molcas = Molcas(molecules=[molecule])
         molcas.project_name = "test_excited_states"
         molcas.settings.work_dir = self.dummy_project_dir
         molcas.settings.xyz_file = self.path + "/files/n2.xyz"
@@ -113,7 +113,7 @@ class TestMainClass(unittest.TestCase):
         autocas = Autocas(molecule=molecule)
         autocas.large_spaces.max_orbitals = 4
         autocas.large_spaces.seed = 1
-        molcas = Molcas(molecule=molecule)
+        molcas = Molcas(molecules=[molecule])
         molcas.settings.n_excited_states = 2
         molcas.project_name = "test_large_cas_excited_states"
         molcas.settings.work_dir = self.dummy_project_dir

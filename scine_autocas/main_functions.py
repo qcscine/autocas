@@ -396,7 +396,7 @@ class MainFunctions:
             autocas = Autocas(molecule=molecule)
             if settings_dict["xyz_file"][0] != "/":
                 settings_dict["xyz_file"] = os.getcwd() + "/" + settings_dict["xyz_file"]
-            interface = Molcas(molecule=molecule)
+            interface = Molcas(molecules=[molecule])
             interface.settings.basis_set = settings_dict["basis_set"]
             interface.settings.xyz_file = settings_dict["xyz_file"]
             interface.environment.molcas_scratch_dir = os.getcwd() + "/molcas_scratch"

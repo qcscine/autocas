@@ -1,6 +1,12 @@
 Release History
 ===============
 
+2.1.0
+-----
+
+- Added an interface to Serenity that provides a map, mapping orbitals between multiple structures.
+  This map can be used to ensure a consistent CAS along reaction coordinates.
+
 2.0.0
 -----
 

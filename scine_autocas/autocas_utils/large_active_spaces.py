@@ -22,12 +22,12 @@ class LargeSpaces:
     active space protocol.
 
     The large active space protocol enables active space searches in initial actives space with more
-    than 200 orbitals. It devides the orbital space into an occupied and virtual sub space.
+    than 200 orbitals. It divides the orbital space into an occupied and virtual sub space.
     These spaces are separated into many smaller subspaces. Afterwards all occupied subspaces are recombined
     with all virtual subspaces, hence creating more, but smaller, active space. All active spaces are
     evaluated by an "initial" DMRG calculation, to calculate the single orbital entropies. These entropies
     are then recombined, to approximate the single orbital entropies from the full initial cas.
-    The "final" active space is then looked for with the approximated s1.
+    The "final" active space is then constructed from the approximated s1.
 
     """
 
@@ -44,7 +44,7 @@ class LargeSpaces:
         """Construct the LargeSpaces object.
 
         A LargeSpaces object stores all relevant data and provides routines to
-        devide spaces into occupied and virtual as well as into sub spaces and
+        divide spaces into occupied and virtual as well as into sub spaces and
         the recombination of these subspaces.
 
         Parameters

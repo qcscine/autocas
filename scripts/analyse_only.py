@@ -71,7 +71,7 @@ class Analyzer:
             tmp_molecule = Molecule(settings["molecule"])
 
         self.molecule: Molecule = tmp_molecule
-        self.molcas: Molcas = Molcas(self.molecule)
+        self.molcas: Molcas = Molcas([self.molecule])
         self.autocas: Autocas = Autocas(self.molecule)
         self.thresh_plot: ThresholdPlot = ThresholdPlot()
         self.entang_plot: EntanglementPlot = EntanglementPlot()
@@ -132,6 +132,7 @@ class Analyzer:
 
         s1_init = analysis_results[0]
         mut_inf_init = analysis_results[2]
+        print(s1_init)
         return s1_init, mut_inf_init
 
     def analyze_full_autocas_project(self, project_path: str):

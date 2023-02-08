@@ -54,11 +54,11 @@ class Qcmaquis:
         """extracts one and two orbital RDM from QCMaquis results fil"""
         self.orbital_rdm_builder: OrbitalRDMBuilder = OrbitalRDMBuilder()
         """evaluates and stores the orbital RMDs"""
-        self.s1_entropy: np.ndarray
+        self.s1_entropy: np.ndarray = np.array([])
         """single orbital entrop"""
-        self.s2_entropy: np.ndarray
+        self.s2_entropy: np.ndarray = np.array([])
         """two orbital entrop"""
-        self.mutual_information: np.ndarray
+        self.mutual_information: np.ndarray = np.array([])
         """mutual information"""
         self.n_orbitals: int = 0
         """number of orbitals in CA"""

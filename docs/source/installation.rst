@@ -54,4 +54,4 @@ variable `MOLCAS` pointing to the ``build`` directory.
 
 .. code-block:: bash
 
-   export MOLCAS = /path/to/Molcas/build
+   export MOLCAS=/path/to/Molcas/build

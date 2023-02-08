@@ -161,11 +161,11 @@ class Interface:
             "n_excited_states"
         )
 
-        def __init__(self, molecule: Molecule, settings_dict: Optional[Dict[str, Any]] = None):
+        def __init__(self, molecules: List[Molecule], settings_dict: Optional[Dict[str, Any]] = None):
             """Construct a settings object.
 
             This is just the constructor of the base class. To use it, it needs to be called by
-            super().__init__(molecule=molecule, settings_dict=settings_dict)
+            super().__init__(molecules=molecules, settings_dict=settings_dict)
 
             Parameters
             ----------
@@ -180,9 +180,9 @@ class Interface:
             """
             self.basis_set: str = "cc-pvdz"
             """basis set for the calculation"""
-            self.spin_multiplicity: int = molecule.spin_multiplicity
+            self.spin_multiplicity: int = molecules[0].spin_multiplicity
             """spin multiplicity of the system"""
-            self.charge: int = molecule.charge
+            self.charge: int = molecules[0].charge
             """total charge of the system"""
             self.dmrg_sweeps: int = 5
             """number of sweeps in a DMRG calculation"""
@@ -216,12 +216,12 @@ class Interface:
                     setattr(self, key, settings[key])
 
     # interface
-    def __init__(self, molecule: Molecule, settings_dict: Optional[Dict[str, Any]] = None):
+    def __init__(self, molecules: List[Molecule], settings_dict: Optional[Dict[str, Any]] = None):
         """Construct Interface from a molecule.
 
         This is just the constructor of the base class. To use it, it
         needs to be called by
-        super().__init__(molecule=molecule, settings_dict=settings_dict)
+        super().__init__(molecules=molecules, settings_dict=settings_dict)
 
         Parameters
         ----------
@@ -236,10 +236,10 @@ class Interface:
         """contains information on the input of the electronic structure program"""
         if settings_dict:
             self.settings = self.Settings(
-                molecule=molecule, settings_dict=settings_dict["settings"]
+                molecules=molecules, settings_dict=settings_dict["settings"]
             )
         else:
-            self.settings = self.Settings(molecule=molecule)
+            self.settings = self.Settings(molecules=molecules)
 
     def calculate(
         self, cas_occupation: Optional[List[int]] = None, cas_indices: Optional[List[int]] = None
@@ -265,4 +265,23 @@ class Interface:
 
     def resource_estimate(self):
         """Estimate resources for the calculation."""
+        return NotImplementedError
+
+    def get_orbital_map(self):
+        """
+        Getter for an orbital map in terms of orbital groups, e.g,
+        [
+            [[3, 4, 5], [3, 4, 6]],
+            [[6], [5]],
+            [[7], [7]],
+            ...
+        ]
+        This list means that the orbitals 3, 4, and 5 of the first system are mapped to the orbitals 3, 4, and 6 of
+        the second system. The orbital 6 of system 1 is mapped to orbital 5 of system 2, and the orbital 7 of system
+        1 is mapped to the orbital 7 of system 2.
+
+        Returns:
+        --------
+            The list of orbital groups / the orbital mpa.
+        """
         return NotImplementedError

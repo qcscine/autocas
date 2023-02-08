@@ -155,6 +155,6 @@ class InputHandler:
             self.get_molecule()
         interface_settings = self.settings_dir["interface"]
         self.interface = Molcas(
-            molecule=self.molecule, settings_dict=interface_settings
+            molecules=[self.molecule], settings_dict=interface_settings
         )
         return self.interface

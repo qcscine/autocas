@@ -215,7 +215,7 @@ class TestMolcasClasses(unittest.TestCase):
     def test_input_handler_1(self):
         input_handler = InputHandler()
         molecule = Molecule(atoms=["H", "H"])
-        settings = Molcas.Settings(molecule=molecule)
+        settings = Molcas.Settings(molecules=[molecule])
         settings.xyz_file = "blubblub.xyz"
         settings.orbital_localisation = True
         settings.localisation_space = "OCCUpied"
@@ -411,7 +411,7 @@ class TestMolcasClasses(unittest.TestCase):
     def test_input_handler_2(self):
         input_handler = InputHandler()
         molecule = Molecule(atoms=["H", "H"])
-        settings = Molcas.Settings(molecule=molecule)
+        settings = Molcas.Settings(molecules=[molecule])
         settings.xyz_file = "blubblub.xyz"
 
         # write input for initial orbitals
@@ -500,7 +500,7 @@ class TestMolcasClasses(unittest.TestCase):
 
     def test_molcas(self):
         molecule = Molecule(self.path + "/files/n2.xyz")
-        molcas = Molcas(molecule)
+        molcas = Molcas(molecules=[molecule])
         molcas.project_name = "test123"
         molcas.settings.work_dir = self.dummy_project_dir
         molcas.settings.xyz_file = self.path + "/files/n2.xyz"
@@ -528,7 +528,7 @@ class TestMolcasClasses(unittest.TestCase):
 
     def test_charge(self):
         molecule = Molecule(xyz_file=self.path + "/files/n2.xyz")
-        molcas = Molcas(molecule)
+        molcas = Molcas(molecules=[molecule])
         molcas.project_name = "test_charge"
         molcas.settings.work_dir = self.dummy_project_dir
         molcas.settings.xyz_file = self.path + "/files/n2.xyz"
@@ -558,7 +558,7 @@ class TestMolcasClasses(unittest.TestCase):
 
     def test_excited_states(self):
         molecule = Molecule(xyz_file=self.path + "/files/n2.xyz")
-        molcas = Molcas(molecule)
+        molcas = Molcas(molecules=[molecule])
         molcas.settings.n_excited_states = 3
         molcas.project_name = "test_excited_states"
         molcas.settings.work_dir = self.dummy_project_dir
@@ -583,7 +583,7 @@ class TestMolcasClasses(unittest.TestCase):
 
     def test_analyze(self):
         molecule = Molecule(xyz_file=self.path + "/files/n2.xyz")
-        molcas = Molcas(molecule)
+        molcas = Molcas(molecules=[molecule])
         molcas.settings.n_excited_states = 3
         molcas.project_name = "test_analyze"
         molcas.settings.work_dir = self.dummy_project_dir
@@ -599,7 +599,7 @@ class TestMolcasClasses(unittest.TestCase):
             print("No MOLCAS binary found.")
         else:
             molecule1 = Molecule(xyz_file=self.path + "/files/n2.xyz")
-            molcas1 = Molcas(molecule1)
+            molcas1 = Molcas(molecules=[molecule1])
             hdf5_results = molcas1.analyze(
                 molcas_hdf5_file=self.dummy_project_dir
                 + "/test_analyze/dmrg/test_analyze.scf.h5_sel"
@@ -637,7 +637,7 @@ class TestMolcasClasses(unittest.TestCase):
 
     def test_symmetry(self):
         molecule = Molecule(xyz_file=self.path + "/files/n2.xyz")
-        molcas = Molcas(molecule)
+        molcas = Molcas(molecules=[molecule])
 
         # problem with cholesky together with symmetry
         molcas.settings.cholesky = False
@@ -673,7 +673,7 @@ class TestMolcasClasses(unittest.TestCase):
 
             # same with symmetry
             molecule = Molecule(xyz_file=self.path + "/files/n2.xyz")
-            molcas1 = Molcas(molecule)
+            molcas1 = Molcas(molecules=[molecule])
 
             # problem with cholesky
             molcas1.settings.cholesky = False
@@ -733,7 +733,7 @@ class TestMolcasClasses(unittest.TestCase):
 
     def test_fiedler(self):
         molecule = Molecule(xyz_file=self.path + "/files/n2.xyz")
-        molcas = Molcas(molecule)
+        molcas = Molcas(molecules=[molecule])
         molcas.settings.fiedler = False
         molcas.settings.dmrg_bond_dimension = 3000
         molcas.settings.dmrg_sweeps = 20
@@ -768,7 +768,7 @@ class TestMolcasClasses(unittest.TestCase):
 
             # same with symmetry
             molecule = Molecule(xyz_file=self.path + "/files/n2.xyz")
-            molcas1 = Molcas(molecule)
+            molcas1 = Molcas(molecules=[molecule])
             molcas1.settings.fiedler = True
             molcas1.settings.dmrg_bond_dimension = 3000
             molcas1.settings.dmrg_sweeps = 20

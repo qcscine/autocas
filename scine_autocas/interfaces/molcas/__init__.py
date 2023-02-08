@@ -137,11 +137,12 @@ class Molcas(Interface):
             "ci_size",
             "weights",
             "roots",
+            "skip_scf"
         )
 
-        def __init__(self, molecule: Molecule, settings_dict: Optional[Dict] = None):
+        def __init__(self, molecules: List[Molecule], settings_dict: Optional[Dict] = None):
             """Construct class."""
-            super().__init__(molecule=molecule, settings_dict=settings_dict)
+            super().__init__(molecules=molecules, settings_dict=settings_dict)
             self.point_group: str = "C1"
             """
             point group of the molecule in Molcas notation, e.g.
@@ -190,6 +191,8 @@ class Molcas(Interface):
             """localisation method, e.g.
             PIPEk-Mezey, BOYS, EDMIston-Ruedenberg, CHOLesky, PAO
             """
+            self.skip_scf = False
+            """If true, only one SCF iteration is performed."""
             if settings_dict:
                 self.apply_settings(settings_dict)
 
@@ -209,7 +212,7 @@ class Molcas(Interface):
         "caspt2_energies",
     )
 
-    def __init__(self, molecule: Molecule, settings_dict: Optional[Dict[str, Any]] = None):
+    def __init__(self, molecules: List[Molecule], settings_dict: Optional[Dict[str, Any]] = None):
         """Construct a molcas interface.
 
         Parameters
@@ -226,7 +229,7 @@ class Molcas(Interface):
         self.settings: Molcas.Settings
         """provides all settings for molcas"""
         # initialize base interface
-        super().__init__(molecule=molecule, settings_dict=settings_dict)
+        super().__init__(molecules=molecules, settings_dict=settings_dict)
         self.environment: Environment = Environment()
         """coltrols the enviroment for Molcas"""
         self.qc_maquis: Qcmaquis = Qcmaquis()

@@ -38,6 +38,10 @@ class InputHandler:
         input_file.write("\n&SCF\n")
         if settings.uhf or settings.spin_multiplicity != 1:
             input_file.write("  uhf\n")
+        if settings.skip_scf:
+            input_file.write("  ITERations = 1\n")
+            input_file.write("  THREshold  = 1e+9 1e+9 1e+9 1e+9\n")
+
         # multiplicity, e.g. 1 (singlet), 2 (doublet), ...
         input_file.write(f"  SPIN   = {settings.spin_multiplicity}\n")
         input_file.write(f"  CHARGE = {settings.charge}\n")
@@ -144,6 +148,7 @@ class InputHandler:
         alter : str
             a string to reorder orbitals, instead of doing that in the orbital file
         """
+        print()
         with open(file_name, "w", encoding="utf-8") as input_file:
             if settings.initial_orbitals:
                 self.__initial_orbitals(settings, input_file)
