@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __copyright__ = """This file is part of SCINE AutoCAS.
 This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory for Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details
 """
 
@@ -44,7 +44,7 @@ with open('scine_autocas/_version.py') as f:
 setup(
     name="scine_autocas",
     version=__version__,
-    author="ETH Zurich, Laboratory of Physical Chemistry, Reiher Group",
+    author="ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group",
     author_email="scine@phys.chem.ethz.ch",
     description="Automated active space selection quantum chemical software",
     long_description=readme,
@@ -69,6 +69,11 @@ setup(
         "Natural Language :: English",
         "Topic :: Scientific/Engineering :: Chemistry",
     ],
+    entry_points={
+        'console_scripts': [
+            'scine_autocas = scine_autocas.__main__:main',
+        ],
+    },
     install_requires=requirements,
     zip_safe=False,
     test_suite="pytest",

@@ -4,7 +4,7 @@ All calls are done through Serenity's Python interface.
 """
 # -*- coding: utf-8 -*-
 __copyright__ = """This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory of Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details.
 """
 
@@ -57,8 +57,8 @@ class Serenity(Interface):
             self.uhf: bool = False
             """ Run unrestricted """
             self.localisation_method: str = "IBO"
-            """localisation method, e.g.
-            PIPEk-Mezey, BOYS, EDMIston-Ruedenberg, IBO
+            """localisation method. Options are
+            PIPEK_MEZEY, BOYS, EDMINSTON_RUEDENBERG, IBO.
             """
             self.alignment = True
             """Align orbitals for multiple structures"""
@@ -355,8 +355,9 @@ class Serenity(Interface):
         import serenipy as spy
         known_methods: dict = {
             "IBO": spy.ORBITAL_LOCALIZATION_ALGORITHMS.IBO,
-            "PIPEK_MEZEY": spy.ORBITAL_LOCALIZATION_ALGORITHMS.PIPEK_MEZEY,
-            "EDMINSTON_RUEDENBERG": spy.ORBITAL_LOCALIZATION_ALGORITHMS.EDMINSTON_RUEDENBERG
+            "PIPEK_MEZEY": spy.ORBITAL_LOCALIZATION_ALGORITHMS.PM,
+            "EDMINSTON_RUEDENBERG": spy.ORBITAL_LOCALIZATION_ALGORITHMS.ER,
+            "BOYS": spy.ORBITAL_LOCALIZATION_ALGORITHMS.FB
         }
         if label in known_methods:
             return known_methods[label]

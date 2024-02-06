@@ -39,8 +39,8 @@ autocas:
     single_reference_threshold: 0.14
   # Settings for large active space protocol. Only used if large_cas is enabled.
   large_spaces:
-    # Maximum number of orbitals in a sub-cas.
-    max_orbitals: 4
+    # Maximum number of orbitals in a sub-cas
+    max_orbitals: 30
 # Interface related settings.
 interface:
   # Which interface to use. (Currently only molcas is implemented)

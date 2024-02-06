@@ -6,7 +6,7 @@ in scine_autocas.main_functions
 # -*- coding: utf-8 -*-
 __copyright__ = """This file is part of SCINE AutoCAS.
 This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory for Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details
 """
 
@@ -26,7 +26,7 @@ def standard_autocas_procedure(path: str, xyz_file: str):
 
     # initialize autoCAS and Molcas interface
     autocas = Autocas(molecule)
-    molcas = Molcas(molecule)
+    molcas = Molcas([molecule])
 
     # setup interface
     molcas.project_name = "example"
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     main_functions = MainFunctions()
     test_molecule = Molecule(xyz)
     test_autocas = Autocas(test_molecule)
-    test_interface = Molcas(test_molecule)
+    test_interface = Molcas([test_molecule])
 
     test_interface.project_name = "verify_example"
     test_interface.settings.work_dir = path_to_this_file + "/../test/verify_example"

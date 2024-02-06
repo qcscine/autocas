@@ -6,7 +6,7 @@ from an autocas project dir or an qcmaquis result state file.
 # -*- coding: utf-8 -*-
 __copyright__ = """This file is part of SCINE AutoCAS.
 This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory for Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details
 """
 
@@ -181,7 +181,7 @@ class Analyzer:
             ) = self.analyze_dmrg_dir(dmrg_dir)
             self.molecule = Molecule(atoms=atoms)
             self.autocas = Autocas(self.molecule)
-            self.molcas = Molcas(self.molecule)
+            self.molcas = Molcas([self.molecule])
 
         elif os.path.isdir(dmrg_large_cas_dir):
             indices, initial_s1, initial_mut_inf = self.analyze_large_cas_dmrg_dir(dmrg_large_cas_dir)

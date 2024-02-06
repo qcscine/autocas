@@ -6,7 +6,7 @@ scine_autocas.main_functions
 # -*- coding: utf-8 -*-
 __copyright__ = """This file is part of SCINE AutoCAS.
 This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory for Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details
 """
 
@@ -26,7 +26,7 @@ def large_cas_autocas_example(path: str, xyz_file: str):
 
     # initialize autoCAS and Molcas interface
     autocas = Autocas(molecule)
-    molcas = Molcas(molecule)
+    molcas = Molcas([molecule])
 
     # setup interface
     molcas.project_name = "large_cas_example"
@@ -58,7 +58,7 @@ def large_cas_autocas_example(path: str, xyz_file: str):
     molcas.calculate()
 
     # set maximum number of orbitals in a sub cas
-    autocas.large_spaces.max_orbitals = 4
+    autocas.large_spaces.max_orbitals = 30
 
     # get a list of occupations and indices for each sub cas
     large_cas_occupations, large_cas_indices = autocas.get_large_active_spaces()
@@ -141,12 +141,13 @@ if __name__ == "__main__":
     main_functions = MainFunctions()
     test_molecule = Molecule(xyz_file=xyz)
     test_autocas = Autocas(test_molecule)
-    test_interface = Molcas(test_molecule)
-
+    test_interface = Molcas([test_molecule])
+    
     test_interface.project_name = "verify_large_cas_example"
     test_interface.settings.work_dir = path_to_this_file + "/../test/verify_large_cas_example"
     test_interface.settings.xyz_file = xyz
     test_interface.environment.molcas_scratch_dir = path_to_this_file + "/../test/scratch_tmp"
+    test_interface.calculate()
 
     test_interface.settings.method = "dmrg-ci"
     test_interface.settings.dmrg_bond_dimension = 250

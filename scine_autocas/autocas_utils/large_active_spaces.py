@@ -6,7 +6,7 @@ protocol.
 """
 # -*- coding: utf-8 -*-
 __copyright__ = """ This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory of Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details. """
 
 from typing import Any, Dict, List, Optional, Tuple
@@ -38,6 +38,7 @@ class LargeSpaces:
         "n_electrons",
         "orbital_indices",
         "occupation",
+        "average_entanglement",
     )
 
     def __init__(self, settings_dict: Optional[Dict[str, Any]] = None):
@@ -56,9 +57,9 @@ class LargeSpaces:
         --------
         settings_dict : InputHandler
         """
-        self.seed: Optional[int] = None
+        self.seed: Optional[int] = 42
         """sets the seed for np.random. Should not be modified."""
-        self.max_orbitals: int = 20
+        self.max_orbitals: int = 30
         """maximum number of orbitals per active space. Active spaces contain the same number of orbitals."""
         self.n_orbitals: List[int]
         """contains number of orbitals per sub-CAS"""
@@ -68,6 +69,8 @@ class LargeSpaces:
         """a List that contains a List of orbital indices"""
         self.occupation: List[List[int]]
         """a List that contains a List of orbital occupations"""
+        self.average_entanglement: bool = False
+        """Flag to average the entropies from all sub-CASs instead of taking the max value"""
         if settings_dict is not None:
             for key in settings_dict:
                 if hasattr(self, key):

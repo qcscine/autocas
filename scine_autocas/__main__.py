@@ -1,14 +1,16 @@
 """Main module."""
 # -*- coding: utf-8 -*-
 __copyright__ = """ This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory of Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details. """
 
 import argparse
+import sys
 
 from scine_autocas.main_functions import MainFunctions
 
-if __name__ == "__main__":
+
+def main():
     parser = argparse.ArgumentParser(description="SCINE autoCAS")
     parser.add_argument(
         "-y", "--yaml_input", default=None, type=str, help="The yaml input file."
@@ -39,5 +41,12 @@ if __name__ == "__main__":
         help="The interface to use for the calculations. Available: Molcas,  Default: Molcas",
     )
     args = vars(parser.parse_args())
+    if args["xyz_file"] is None and args["yaml_input"] is None:
+        parser.print_help()
+        sys.exit(1)
     main_class = MainFunctions()
     main_class.main(args)
+
+
+if __name__ == "__main__":
+    main()

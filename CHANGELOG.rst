@@ -1,6 +1,13 @@
 Release History
 ===============
 
+2.2.0
+-----
+
+- Raise specific exception when single-reference case is encountered
+- Update address in license
+- Fix typo in Serenity interface
+
 2.1.0
 -----
 

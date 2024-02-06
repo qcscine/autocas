@@ -2,7 +2,7 @@
 related methods."""
 # -*- coding: utf-8 -*-
 __copyright__ = """This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory of Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details. """
 
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
@@ -15,6 +15,15 @@ from scine_autocas.autocas_utils.large_active_spaces import LargeSpaces
 from scine_autocas.autocas_utils.molecule import Molecule
 
 from ._version import __version__  # noqa: F401
+
+
+class SingleReferenceException(Exception):
+    """
+    Raised when autoCAS determines that the system is single reference
+    instead of multireference. This allows the client to catch the exception
+    in case they want to perform a single reference calculation afterward.
+    """
+    pass
 
 
 class Autocas:
@@ -311,7 +320,7 @@ class Autocas:
             print("Single orbital entropies (s1) are too low. AutoCAS suggests no active space.")
             print("Note: if you want an active space calculation anyway, you can enforce this")
             print("behavior, by adding 'force_cas=True' as agrument.")
-            raise Exception("No active space method required here")
+            raise SingleReferenceException("No active space method required here")
 
         # make active space
         if self._make_active_space():
@@ -426,11 +435,16 @@ class Autocas:
         for i, _ in enumerate(s1_list):
             for count, index in enumerate(indices_list[i]):
                 occupation[index - self.molecule.core_orbitals] = occupations_list[i][count]
-                s1_entropy[index - self.molecule.core_orbitals] += s1_list[i][count]
-                scale_1[index - self.molecule.core_orbitals] += 1
-        # normalization
-        for i, _ in enumerate(s1_entropy):
-            s1_entropy[i] = s1_entropy[i] / scale_1[i]
+                if self.large_spaces.average_entanglement:
+                    s1_entropy[index - self.molecule.core_orbitals] += s1_list[i][count]
+                    scale_1[index - self.molecule.core_orbitals] += 1
+                else:
+                    if s1_entropy[index - self.molecule.core_orbitals] < s1_list[i][count]:
+                        s1_entropy[index - self.molecule.core_orbitals] = s1_list[i][count]
+        if self.large_spaces.average_entanglement:
+            # normalization
+            for i, _ in enumerate(s1_entropy):
+                s1_entropy[i] = s1_entropy[i] / scale_1[i]
 
         occupation = occupation.astype(int, copy=False)
         self.diagnostics.s1_entropy = s1_entropy
@@ -445,24 +459,43 @@ class Autocas:
             for i in range(len(s1_list)):
                 for count1, index_1 in enumerate(indices_list[i]):
                     for count2, index_2 in enumerate(indices_list[i]):
-                        s2_entropy[
-                            index_1 - self.molecule.core_orbitals,
-                            index_2 - self.molecule.core_orbitals,
-                        ] += s2_list[i][count1, count2]
-                        mut_inf[
-                            index_1 - self.molecule.core_orbitals,
-                            index_2 - self.molecule.core_orbitals,
-                        ] += mut_inf_list[i][count1, count2]
-                        scale_2[
-                            index_1 - self.molecule.core_orbitals,
-                            index_2 - self.molecule.core_orbitals,
-                        ] += 1
-            # normalization
-            for i in range(len(s1_entropy)):
-                for j in range(len(s1_entropy)):
-                    if scale_2[i, j] != 0:
-                        s2_entropy[i, j] = s2_entropy[i, j] / scale_2[i, j]
-                        mut_inf[i, j] = mut_inf[i, j] / scale_2[i, j]
+                        if self.large_spaces.average_entanglement:
+                            s2_entropy[
+                                index_1 - self.molecule.core_orbitals,
+                                index_2 - self.molecule.core_orbitals,
+                            ] += s2_list[i][count1, count2]
+                            mut_inf[
+                                index_1 - self.molecule.core_orbitals,
+                                index_2 - self.molecule.core_orbitals,
+                            ] += mut_inf_list[i][count1, count2]
+                            scale_2[
+                                index_1 - self.molecule.core_orbitals,
+                                index_2 - self.molecule.core_orbitals,
+                            ] += 1
+                        else:
+                            if s2_entropy[
+                                index_1 - self.molecule.core_orbitals,
+                                index_2 - self.molecule.core_orbitals,
+                            ] < s2_list[i][count1, count2]:
+                                s2_entropy[
+                                    index_1 - self.molecule.core_orbitals,
+                                    index_2 - self.molecule.core_orbitals,
+                                ] = s2_list[i][count1, count2]
+                            if mut_inf[
+                                index_1 - self.molecule.core_orbitals,
+                                index_2 - self.molecule.core_orbitals,
+                            ] < mut_inf_list[i][count1, count2]:
+                                mut_inf[
+                                    index_1 - self.molecule.core_orbitals,
+                                    index_2 - self.molecule.core_orbitals,
+                                ] = mut_inf_list[i][count1, count2]
+            if self.large_spaces.average_entanglement:
+                # normalization
+                for i in range(len(s1_entropy)):
+                    for j in range(len(s1_entropy)):
+                        if scale_2[i, j] != 0:
+                            s2_entropy[i, j] = s2_entropy[i, j] / scale_2[i, j]
+                            mut_inf[i, j] = mut_inf[i, j] / scale_2[i, j]
             self.diagnostics.s2_entropy = s2_entropy
             self.diagnostics.mutual_information = mut_inf
             return occupation, s1_entropy, s2_entropy, mut_inf
