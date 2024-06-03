@@ -87,5 +87,4 @@ def combine_active_spaces(occupations: List[List[float]], active_spaces: List[Li
         for i_sys, orbitals in enumerate(group):
             new_active_spaces[i_sys] += orbitals
             new_occupations[i_sys] += [occ for _ in range(n_orbitals)]
-
     return new_occupations, new_active_spaces

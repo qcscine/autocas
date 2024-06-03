@@ -202,7 +202,7 @@ class Autocas:
         return plateau_vector, orbitals_index
 
     def _make_active_space(self) -> bool:
-        """Make active space by searching plteaus in s1 and reordering
+        """Make active space by searching plateaus in s1 and reordering
         orbitals.
 
         Returns

@@ -1,6 +1,13 @@
 Release History
 ===============
 
+2.3.0
+-----
+- Fixed a typo in the Serenity interface.
+- Updated default orbital mapping approach in `consistent_active_orbital_spaces.py` and
+  added an option to always exclude core orbitals from the active space if they cannot
+  be mapped consistently.
+
 2.2.0
 -----
 

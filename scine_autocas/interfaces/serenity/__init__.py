@@ -237,9 +237,9 @@ class Serenity(Interface):
         for i_sys, sys in enumerate(self.systems):
             loading_path = self.settings.molcas_orbital_files[i_sys]
             if self.settings.uhf:
-                read = spy.ReadOrbitalsTask_U(sys)
+                read = spy.OrbitalsIOTask_U(sys)
             else:
-                read = spy.ReadOrbitalsTask_R(sys)
+                read = spy.OrbitalsIOTask_R(sys)
             read.settings.fileFormat = spy.ORBITAL_FILE_TYPES.MOLCAS
             read.settings.resetCoreOrbitals = False
             read.settings.replaceInFile = write

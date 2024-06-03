@@ -41,13 +41,15 @@ def set_up_options():
     parser.add_option("-s", "--skip_scf", dest="skip_scf", action="store_true", default=False,
                       help="If true, paths to the Serenity system directories are expected instead of the path to the XYZ files."
                            " The orbitals are then loaded from these directories.")
-    parser.add_option("-m", "--cas_method", dest="cas_method", action="store", default="caspt2")
+    parser.add_option("-m", "--cas_method", dest="cas_method", action="store", default="CASPT2")
     parser.add_option("-i", "--autocas_indices", dest="autocas_molecule_indices", default="",
                       help="The molecule indices used for the autocas selection. By default the CAS is selected for all molecules.")
     parser.add_option("-b", "--basis", dest="basis_set", default="cc-pvdz",
                       help="The atomic basis set label.")
     parser.add_option("-l", "--large_active_space", dest="large_active_space", default=True, action="store_false",
-                      help="If true, the large active space protocoll in autocas is used. By default true.")
+                      help="If given, the large active space protocoll in autocas is not used. By default it is used.")
+    parser.add_option("-c", "--exclude_core", dest="exclude_core", default=True, action="store_false",
+                      help="If given, core orbitals can be selected for the active space. By default, all core orbitals are removed.")
     parser.add_option("-u", "--unmapable", dest="always_include_unmapables", default=False, action="store_true")
     return parser.parse_args()
 
@@ -58,10 +60,11 @@ def setup_molcas_and_molecule(path: str, xyz_file: str, name: str, options) -> T
 
     # initialize autoCAS and Molcas interface
     molcas = Molcas([molecule])
+    print("Basis set", options.basis_set)
 
     # setup interface
     molcas.project_name = name
-    molcas.basis_set = options.basis_set
+    molcas.settings.basis_set = options.basis_set
     molcas.settings.work_dir = path + "/molcas/" + name
     molcas.environment.molcas_scratch_dir = path + "/molcas/scratch"
     molcas.settings.xyz_file = xyz_file
@@ -176,6 +179,7 @@ def run_final_calculation(molcas: Molcas, cas_occ: List[float], cas_index: List[
     # cas and hyphen do not matter for method names
     molcas.settings.method = method
     if "PT2" in method:
+        print("Running CASPT2")
         molcas.settings.post_cas_method = "CASPT2"
         molcas.settings.method = "CASSCF"
 
@@ -244,8 +248,8 @@ def main(path_to_this_file: str):
             "optimized_mapping": True,
             "work_dir": "serenity/",
             "basis_set": options.basis_set,
-            "score_start": 0.5,
-            "skip_localization": options.skip_scf
+            "score_start": 1.0,
+            "skip_localization": False
         }
     }
     print("Final energy evaulation method: " + options.cas_method)
@@ -293,18 +297,19 @@ def main(path_to_this_file: str):
     cas_indices = [[] for _ in names]
     # Run autoCAS
     for i in autocas_system_indices:
-        molecule = molecules[i]
-        molcas = interfaces[i]
-        name = names[i]
-        cas_occ, cas_index = run_autocas(molecule, molcas, name, options)
-        cas_occupations[i] = cas_occ
-        cas_indices[i] = cas_index
+       molecule = molecules[i]
+       molcas = interfaces[i]
+       name = names[i]
+       cas_occ, cas_index = run_autocas(molecule, molcas, name, options)
+       cas_occupations[i] = cas_occ
+       cas_indices[i] = cas_index
 
     print("*******************************************************************************************")
     print("*                                                                                         *")
     print("*                               Combined Active Spaces                                    *")
     print("*                                                                                         *")
     print("*******************************************************************************************")
+
     # Combine CAS
     combined_occupations, combined_indices = combine_active_spaces(cas_occupations, cas_indices, orbital_map)
     # Always include all unmappable orbitals if required.
@@ -323,6 +328,15 @@ def main(path_to_this_file: str):
                 if i not in cas_index:
                     cas_index.append(i)
                     cas_occ.append(0)
+
+    if options.exclude_core:
+        n_core_orbitals = molecules[0].core_orbitals
+        for active_space, occupations in zip(combined_indices, combined_occupations):
+            for i in range(n_core_orbitals):
+                if i in active_space:
+                    idx = active_space.index(i)
+                    active_space.remove(i)
+                    occupations.remove(occupations[idx])
 
     combined_file = open("combined_cas_spaces", "w")
     for cas_index, cas_occ in zip(combined_indices, combined_occupations):
