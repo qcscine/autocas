@@ -1,6 +1,11 @@
 Release History
 ===============
 
+2.3.1
+-----
+
+- Removed unused package from requirements file
+
 2.3.0
 -----
 - Fixed a typo in the Serenity interface.

@@ -125,6 +125,12 @@ the respective release) and the following publications:
 * Excited states and reaction paths:
   C. J. Stein and M. Reiher, "Automated Identification of Relevant Frontier Orbitals for Chemical Compounds and Processes", *Chimia*, **2017**, *71*, 170.
 
+* SCINE framework:
+  T. Weymuth, J. P. Unsleber, P. L. Türtscher, M. Steiner, J.-G. Sobez, C. H. Müller, M. Mörchen,
+  V. Klasovita, S. A. Grimmel, M. Eckhoff, K.-S. Csizi, F. Bosia, M. Bensberg, M. Reiher,
+  "SCINE—Software for chemical interaction networks", *J. Chem. Phys.*, **2024**, *160*, 222501
+  (DOI `10.1063/5.0206974 <https://doi.org/10.1063/5.0206974>`_).
+
 Support and Contact
 -------------------
 
