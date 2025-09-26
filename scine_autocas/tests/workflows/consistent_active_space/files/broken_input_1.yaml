@@ -1,0 +1,4 @@
+xyz_files: [n2_0.xyz]
+basis_set: cc-pvdz
+unmappable: true
+exclude_core: false

@@ -33,12 +33,21 @@ author = 'Reiher Group'
 version = scine_autocas.__version__
 release = scine_autocas.__version__
 
+EXCLUDE_OBJECTS = ("ElementDict")
+
+
 # skip test
 
 
 def autodoc_skip_member_handler(app, what, name, obj, skip, options):
     # Basic approach; you might want a regex instead
-    return name.startswith("test")
+    exclude = None
+    if name.startswith("test"):
+        exclude = True
+    if name in EXCLUDE_OBJECTS:
+        exclude = True
+
+    return exclude
 
 # Automatically called by sphinx at startup
 

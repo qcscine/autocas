@@ -14,88 +14,10 @@ SCINE autoCAS automates the crucial active-orbital-space selection step in multi
 measures derived from an approximate DMRG wave function, it identifies all strongly correlated orbitals to be included in the active space
 of a final, converged calculation. All steps can be carried out in a fully automated fashion.
 
-Installation
-------------
+Installation and Usage
+----------------------
 
-Currently autoCAS can be installed via pip or manually with git and pip (see sections below).
-
-Basic Requirements
-..................
-
-AutoCAS utilizes a couple of third-party packages, which are defined in the ``requirements.txt``.
-
-All requirements are automatically installed by installing autoCAS over one of the following methods.
-
-pip
-...
-
-Prerequisites
-``````````````
-
-    #. python3.6+
-
-Install
-```````
-This methods allows you to install the package via pip.
-
-.. code-block:: bash
-
-   pip install scine-autocas
-
-Git + pip
-.........
-
-Prerequisites
-``````````````
-
-    #. git
-    #. python3.6+
-
-Install
-```````
-This methods requires you to first clone the repository and install the package over pip.
-
-.. code-block:: bash
-
-   git clone <autocas-repo>
-   cd autoCAS
-   pip install -r requirements.txt
-   pip install .
-
-Set up OpenMolcas
------------------
-Up to this point `OpenMolcas` does not provide any way to call itself from a native Python interfaces.
-Hence, autoCAS calls `OpenMolcas` directly over `pymolcas`. In order to do so, please set the environment
-variable `MOLCAS` pointing to the ``build`` directory.
-
-.. code-block:: bash
-
-   export MOLCAS=/path/to/Molcas/build
-
-Quickstart
-----------
-
-After installing autoCAS it can be started from the command line. To show all possible options, please run:
-
-.. code-block:: bash
-
-   python3 -m scine_autocas -h
-
-For example, autoCAS can be started by passing a valid XYZ file to it, and running all calculations with the corresponding defaults.
-
-.. code-block:: bash
-
-   python3 -m scine_autocas -x <molecule.xyz>
-
-To pass a basis set, a different interface or enable the creation of entanglement diagrams
-the following directives can be passed:
-
-.. code-block:: bash
-
-   python3 -m scine_autocas --xyz_file <molecule.xyz> --basis_set cc-pvtz --plot --interface Molcas
-
-However we would strongly recommend providing a ``.yml``-input file, to make calculations reproducible and
-allowing higher customization of autoCAS.
+Please see the documentation (available online at `scine.ethz.ch <https://scine.ethz.ch>`_) or in the folder `docs`.
 
 License and Copyright Information
 ---------------------------------
@@ -124,6 +46,9 @@ the respective release) and the following publications:
 
 * Excited states and reaction paths:
   C. J. Stein and M. Reiher, "Automated Identification of Relevant Frontier Orbitals for Chemical Compounds and Processes", *Chimia*, **2017**, *71*, 170.
+
+* Consistent active orbital spaces along reaction paths:
+  M. Bensberg and M. Reiher, "Corresponding Active Orbital Spaces along Chemical Reaction Paths", *J. Phys. Chem. Lett.*, **2023**, *14*, 2112.
 
 * SCINE framework:
   T. Weymuth, J. P. Unsleber, P. L. Türtscher, M. Steiner, J.-G. Sobez, C. H. Müller, M. Mörchen,

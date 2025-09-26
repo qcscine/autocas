@@ -1,15 +1,9 @@
-"""Modify Molcas Hdf5 files.
-
-This module implements a class to read and modify molcas input files.
-The modification of the orbital hdf5 file allows to change the order of orbitals,
-required for active space calculations, without using MOLCASs 'alter' keyword.
-"""
 # -*- coding: utf-8 -*-
 __copyright__ = """ This code is licensed under the 3-clause BSD license.
 Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details. """
 
-from typing import List, Union
+from typing import List
 
 import h5py
 import numpy as np
@@ -58,7 +52,7 @@ class MolcasHdf5Utils:
         "energy",
     ]
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Construct class."""
         # Attributes
         self.nbas: np.ndarray
@@ -82,7 +76,7 @@ class MolcasHdf5Utils:
            e.g. 0: virtual, 1: singly occupied (uhf), 2: doubly occupied (rhf)"""
         self.symmetries: List[int] = []
         """contains the symmetry index of each orbtial"""
-        self.energy: Union[np.ndarray, float] = 0
+        self.energy: float = 0
         """contains the energy for every state"""
 
     def modify_hdf5(self, hdf5_file: str, cas_orbitals: List[int]):
@@ -148,14 +142,16 @@ class MolcasHdf5Utils:
         self.nbas = np.array(h5_file.attrs["NBAS"])
         self.irrep_labels = np.array(h5_file.attrs["IRREP_LABELS"])
         self.natoms = h5_file.attrs["NATOMS_UNIQUE"]
-        self.module = h5_file.attrs["MOLCAS_MODULE"].item().decode("UTF-8")
+        if not isinstance(h5_file.attrs["MOLCAS_MODULE"], h5py.Empty):
+            self.module = h5_file.attrs["MOLCAS_MODULE"].item().decode("UTF-8")
 
         # get orbital type
         orbital_type = ""
         if self.module == "RASSCF":
             orbital_type = "RASSCF"
         else:
-            orbital_type = h5_file.attrs["ORBITAL_TYPE"].item().decode("UTF-8")
+            if not isinstance(h5_file.attrs["ORBITAL_TYPE"], h5py.Empty):
+                orbital_type = h5_file.attrs["ORBITAL_TYPE"].item().decode("UTF-8")
         self.orbital_type = orbital_type
 
         # get type indices
@@ -223,6 +219,6 @@ class MolcasHdf5Utils:
         try:
             self.energy = np.array(h5_file.get("ROOT_ENERGIES"))[0]
         except KeyError:
-            self.energy = np.array(h5_file.get("ROOT_ENERGIES"))
+            self.energy = np.array(h5_file.get("ROOT_ENERGIES"))  # type: ignore
         h5_file.close()
         return self.energy

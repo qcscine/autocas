@@ -1,7 +1,3 @@
-"""The entanglement plot class.
-
-This module implements a class to conveniently plot an entanglement diagram.
-"""
 # -*- coding: utf-8 -*-
 __copyright__ = """This code is licensed under the 3-clause BSD license.
 Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
@@ -59,7 +55,8 @@ class EntanglementPlot:
         "label_offset",
     )
 
-    def __init__(self):
+    # TODO: all values in defaults
+    def __init__(self) -> None:
         """Construct an entanglement plot object."""
         self.s1_color: str = "firebrick"
         """color of the s1 circles"""
@@ -112,26 +109,38 @@ class EntanglementPlot:
             number of oritals
         """
         axes.scatter(
-            theta,
-            radii,
-            color=self.s1_color,
-            s=area,
-            alpha=alpha,
-            zorder=1,
-            edgecolor="black",
-            linewidth=0.75,
+            theta, radii, color=self.s1_color, s=area, alpha=alpha,
+            zorder=1, edgecolor="black", linewidth=0.75,
         )
         # plot s1 labels
         for i in range(number_of_orbitals):
-            axes.text(
-                theta[i],
-                (float(radii[i]) + self.label_offset),
-                labels[i],
-                alpha=alpha,
-                ha="center",
-                va="center",
-                fontsize=3 + 7 * (10 / number_of_orbitals),
-            )
+            offset = 0.0
+            bold = False
+            if number_of_orbitals > 100:
+                self.label_offset = 0.02
+                if i % 4 == 0:
+                    offset = 0.05
+                    bold = True
+                elif i % 4 == 1:
+                    offset = 0.1
+                elif i % 4 == 2:
+                    offset = 0.15
+                    bold = True
+                elif i % 4 == 3:
+                    offset = 0.2
+            if bold:
+                axes.text(
+                    theta[i], (float(radii[i]) + self.label_offset + offset),
+                    labels[i], alpha=alpha, ha="center", va="center",
+                    fontsize=3 + 7 * (10 / number_of_orbitals),
+                    fontdict={'weight': 'bold'}
+                )
+            else:
+                axes.text(
+                    theta[i], (float(radii[i]) + self.label_offset + offset),
+                    labels[i], alpha=alpha, ha="center", va="center",
+                    fontsize=3 + 7 * (10 / number_of_orbitals),
+                )
 
     def _plot_s1(
         self,
@@ -155,6 +164,7 @@ class EntanglementPlot:
         theta : np.ndarray
             Position of S1 circles
         """
+
         number_of_orbitals = len(s1_entropy)
         theta = np.zeros(number_of_orbitals)
         labels = []
@@ -162,6 +172,7 @@ class EntanglementPlot:
         radii = np.zeros(number_of_orbitals)
         area = np.zeros(number_of_orbitals)
         slice_ = -2 * pi / number_of_orbitals
+
         for i in range(number_of_orbitals):
             # degree
             theta[i] = i * slice_ + pi / 2 + slice_ / 2
@@ -171,9 +182,10 @@ class EntanglementPlot:
             labels.append(str(orbitals_index[i]))
             # scale so that dot area is larger
             if not self.s1_scaled:
-                area[i] = s1_entropy[i] * 10 + s1_entropy[i] * 300 * (10 / number_of_orbitals)
+                area[i] = s1_entropy[i] * (10. + 50000./(number_of_orbitals**2))
+                # area[i] = s1_entropy[i] * (100. + 100. * slice_ * 1.4)
             else:
-                area[i] = s1_entropy[i] * 300 / max(s1_entropy)
+                area[i] = s1_entropy[i] / max(s1_entropy) * (10. + 50000./(number_of_orbitals**2))
         # plot s1 dots
         self._plot_s1_circles(axes, theta, radii, labels, area, self.alpha_s1, number_of_orbitals)
 
@@ -196,6 +208,20 @@ class EntanglementPlot:
         theta : np.ndarray
             the position of the s1 circle
         """
+
+        def get_line_width(mut_inf: float, n_orbitals) -> float:
+            width = 0.0
+            if mut_inf > 0.1:
+                width = (mut_inf-0.1)/(1.4-0.1)*4.0+1.5
+            elif mut_inf > 0.01:
+                width = (mut_inf-0.01)/(0.1-0.01)*1.5+1.0
+            elif mut_inf > 0.001:
+                width = 1.5
+            if number_of_orbitals > 25:
+                width *= 25.0/n_orbitals
+
+            return width
+
         number_of_orbitals = mut_inf.shape[0]
         legendlines = {}
         try:
@@ -206,40 +232,28 @@ class EntanglementPlot:
                     mut_inf_line = mut_inf[i, j]
                     if mut_inf_line > 0.1:
                         line = lines.Line2D(
-                            x_range,
-                            y_range,
-                            linewidth=5 * mut_inf_line / number_of_orbitals,
-                            color=self.mutual_information_color1,
-                            linestyle="-",
-                            alpha=self.alpha_mut_inf,
-                            label="0.1",
-                            zorder=-1,
+                            # x_range, y_range, linewidth=5 * mut_inf_line / number_of_orbitals,
+                            x_range, y_range, linewidth=get_line_width(mut_inf_line, number_of_orbitals),
+                            color=self.mutual_information_color1, linestyle="-",
+                            alpha=self.alpha_mut_inf, label="0.1", zorder=-1,
                         )
                         legendlines["0.1"] = line
                         axes.add_line(line)
                     elif mut_inf_line > 0.01:
                         line = lines.Line2D(
-                            x_range,
-                            y_range,
-                            linewidth=20 * mut_inf_line / number_of_orbitals,
-                            color=self.mutual_information_color2,
-                            linestyle="--",
-                            alpha=self.alpha_mut_inf,
-                            label="0.01",
-                            zorder=-1,
+                            # x_range, y_range, linewidth=20 * mut_inf_line / number_of_orbitals,
+                            x_range, y_range, linewidth=get_line_width(mut_inf_line, number_of_orbitals),
+                            color=self.mutual_information_color2, linestyle="--",
+                            alpha=self.alpha_mut_inf, label="0.01", zorder=-1,
                         )
                         legendlines["0.01"] = line
                         axes.add_line(line)
                     elif mut_inf_line > 0.001:
                         line = lines.Line2D(
-                            x_range,
-                            y_range,
-                            linewidth=30 * mut_inf_line / number_of_orbitals,
-                            color=self.mutual_information_color3,
-                            linestyle=":",
-                            alpha=self.alpha_mut_inf,
-                            label="0.001",
-                            zorder=-1,
+                            # x_range, y_range, linewidth=30 * mut_inf_line / number_of_orbitals,
+                            x_range, y_range, linewidth=get_line_width(mut_inf_line, number_of_orbitals),
+                            color=self.mutual_information_color3, linestyle=":",
+                            alpha=self.alpha_mut_inf, label="0.001", zorder=-1,
                         )
                         legendlines["0.001"] = line
                         axes.add_line(line)
@@ -275,7 +289,7 @@ class EntanglementPlot:
         axes.scatter(1.5, 1.5, color="white", zorder=-1, alpha=self.alpha_s1)
 
         if order1 is not None:
-            orbitals_index = np.array(order1) - 1
+            orbitals_index = np.array(order1)
         else:
             orbitals_index = np.arange(0, number_of_orbitals)
         orbitals_index_np = orbitals_index.tolist()
@@ -310,9 +324,11 @@ class EntanglementPlot:
         plt : matplotlib.pyplot
             the plot object
         """
+
         fig = plt.figure()
         axes = fig.add_subplot(polar=True, position=[0.0, 0.0, 1, 1])
         self._entanglement_plot(axes, s1_entropy, mut_inf_1, order_1)
+
         return plt
 
     def plot_in_plot(
@@ -348,6 +364,7 @@ class EntanglementPlot:
         plt : matplotlib.pyplot
             the plot object
         """
+
         fig = plt.figure()
         axes = fig.add_subplot(polar=True, position=[0.0, 0.0, 1, 1])
         # outer circles\
@@ -373,4 +390,18 @@ class EntanglementPlot:
         new_ax = fig.add_subplot(polar=True, position=[0.25, 0.25, 0.5, 0.5])
 
         self._entanglement_plot(new_ax, s1_entropy_1, mut_inf_1, order_1)
+
         return plt
+
+
+# if __name__ == "__main__":
+#     norbs = 300
+#     s1 = np.random.rand(norbs)
+#     mutinf = np.zeros((norbs, norbs))
+#     # mutinf = np.random.rand(norbs, norbs)
+#     # mutinf += mutinf.transpose()
+#     # mutinf /= 10.0
+#     order = [i*2 for i in range(norbs)]
+#     plot = EntanglementPlot()
+#     plti = plot.plot(s1, mutinf, order)
+#     plti.savefig("testi.png", dpi=300)

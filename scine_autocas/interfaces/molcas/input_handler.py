@@ -13,6 +13,8 @@ import io
 # rename class and corresponding file
 from typing import Any, Optional
 
+from scine_autocas.utils.defaults import CasMethods, PostCasMethods
+
 
 class InputHandler:
     """Create Molcas input files."""
@@ -28,7 +30,7 @@ class InputHandler:
             The already opened input file
         """
         input_file.write("&GATEWAY\n")
-        input_file.write(f"  COORD = {settings.xyz_file}\n")
+        input_file.write(f"  COORD = {settings.get_molecule().xyz_file}\n")
         input_file.write(f"  BASIS = {settings.basis_set}\n")
         if settings.point_group != "":
             input_file.write(f"  GROUP = {settings.point_group}\n")
@@ -36,15 +38,15 @@ class InputHandler:
         if settings.cholesky:
             input_file.write("  CHOLesky\n")
         input_file.write("\n&SCF\n")
-        if settings.uhf or settings.spin_multiplicity != 1:
+        if settings.uhf or settings.get_molecule().spin_multiplicity != 1:
             input_file.write("  uhf\n")
-        if settings.skip_scf:
-            input_file.write("  ITERations = 1\n")
-            input_file.write("  THREshold  = 1e+9 1e+9 1e+9 1e+9\n")
+        # if settings.skip_scf:
+        #     input_file.write("  ITERations = 1\n")
+        #     input_file.write("  THREshold  = 1e+9 1e+9 1e+9 1e+9\n")
 
         # multiplicity, e.g. 1 (singlet), 2 (doublet), ...
-        input_file.write(f"  SPIN   = {settings.spin_multiplicity}\n")
-        input_file.write(f"  CHARGE = {settings.charge}\n")
+        input_file.write(f"  SPIN   = {settings.get_molecule().spin_multiplicity}\n")
+        input_file.write(f"  CHARGE = {settings.get_molecule().charge}\n")
         if settings.cholesky:
             input_file.write("  CHOLesky\n")
         if settings.orbital_localisation:
@@ -68,7 +70,7 @@ class InputHandler:
             a string to reorder orbitals, instead of doing that in the orbital file
         """
         input_file.write("&RASSCF\n")
-        input_file.write(f"  SPIN    = {settings.spin_multiplicity}\n")
+        input_file.write(f"  SPIN    = {settings.get_molecule().spin_multiplicity}\n")
         input_file.write(f"  NACTEL  = {settings.active_electrons}\n")
         if orbital_file:
             input_file.write(f"  FILEORB = {orbital_file}\n")
@@ -80,7 +82,7 @@ class InputHandler:
             input_file.write(f"  RAS2    = {settings.active_orbitals}\n")
             if alter:
                 input_file.write(f"  ALTEr={alter}\n")
-        if settings.CasMethods.key_value(settings.method) % 2:
+        if settings.cas_method in (CasMethods.DMRGCI, CasMethods.CASCI):
             input_file.write("  CIONLY\n")
         if settings.ci_root_string != "":
             input_file.write(f"  CIRoot = {settings.ci_root_string}\n")
@@ -105,11 +107,11 @@ class InputHandler:
             input_file.write("  FIEDLER=ON\n")
         input_file.write("ActiveSpaceOptimizer = QCMaquis\n")
         input_file.write("DMRGSettings\n")
-        input_file.write(f"  nsweeps = {settings.dmrg_sweeps}\n")
-        input_file.write(f"  max_bond_dimension = {settings.dmrg_bond_dimension}\n")
+        input_file.write(f"  nsweeps = {settings.init_dmrg_sweeps}\n")
+        input_file.write(f"  max_bond_dimension = {settings.init_dmrg_bond_dimension}\n")
         input_file.write("EndDMRGSettings\n")
         input_file.write("OOptimizationSettings\n")
-        input_file.write(f"  SPIN    = {settings.spin_multiplicity}\n")
+        input_file.write(f"  SPIN    = {settings.get_molecule().spin_multiplicity}\n")
         input_file.write(f"  NACTEL  = {settings.active_electrons}\n")
         if orbital_file:
             input_file.write(f"  FILEORB = {orbital_file}\n")
@@ -121,11 +123,11 @@ class InputHandler:
             input_file.write(f"  RAS2    = {settings.active_orbitals}\n")
             if alter:
                 input_file.write(f"  ALTEr={alter}\n")
-        if settings.CasMethods.key_value(settings.method) % 2:
+        if settings.cas_method in (CasMethods.DMRGCI, CasMethods.CASCI):
             input_file.write("  CIONLY\n")
         if settings.ci_root_string != "" and settings.ci_root_string is not None:
             input_file.write(f"  CIRoot = {settings.ci_root_string}\n")
-        if settings.spin_multiplicity > 1:
+        if settings.get_molecule().spin_multiplicity > 1:
             pass
         input_file.write("EndOOptimizationSettings\n")
 
@@ -155,17 +157,20 @@ class InputHandler:
 
             if not settings.initial_orbitals:
                 # casscf
-                if settings.CasMethods.key_value(settings.method) < 100:
+                if settings.cas_method in (CasMethods.CASSCF, CasMethods.CASCI):
                     self.__casscf(settings, input_file, orbital_file, alter)
 
                 # dmrgscf
-                elif settings.CasMethods.key_value(settings.method) < 1000:
+                if settings.cas_method in (CasMethods.DMRGSCF, CasMethods.DMRGCI):
                     self.__dmrg(settings, input_file, orbital_file, alter)
 
-                # caspt2
-                if settings.PostCasMethods.key_value(settings.post_cas_method) == 1:
-                    input_file.write("\n&CASPT2\n")
-                    input_file.write(f"  IPEA = {settings.ipea}\n")
-                # nevpt2
-                elif settings.PostCasMethods.key_value(settings.post_cas_method) == 2:
-                    input_file.write("\n&NEVPT2\n")
+                try:
+                    # caspt2
+                    if settings.post_cas_method == PostCasMethods.CASPT2:
+                        input_file.write("\n&CASPT2\n")
+                        input_file.write(f"  IPEA = {settings.ipea}\n")
+                    # nevpt2
+                    if settings.post_cas_method == PostCasMethods.NEVPT2:
+                        input_file.write("\n&NEVPT2\n")
+                except AttributeError:
+                    pass

@@ -1,19 +1,15 @@
 API
 ===
 
-.. autosummary::
-   :toctree: additional_api
-
-   scine_autocas
 
 .. autosummary::
    :toctree: generated
    :recursive:
 
-   scine_autocas.autocas_utils
+   scine_autocas.cas_selection
    scine_autocas.interfaces
+   scine_autocas.io
    scine_autocas.plots
+   scine_autocas.utils
+   scine_autocas.workflows
 
-.. toctree::
-
-   additional_api/scine_autocas.chemical_elements

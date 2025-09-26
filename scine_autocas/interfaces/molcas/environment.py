@@ -1,8 +1,3 @@
-"""The Molcas environment.
-
-This module handles the molcas environment, while respecting already set
-environment variable, without overwriting them.
-"""
 # -*- coding: utf-8 -*-
 __copyright__ = """This code is licensed under the 3-clause BSD license.
 Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
@@ -10,7 +5,9 @@ See LICENSE.txt for details.
 """
 
 import os
-from typing import Dict
+from typing import Dict, Optional
+
+from scine_autocas.io import FileHandler
 
 
 class Environment:
@@ -53,7 +50,7 @@ class Environment:
         "molcas_nprocs",
     )
 
-    def __init__(self, settings_dict=None):
+    def __init__(self) -> None:  # , settings_dict: Dict[Any] = None):
         """Init function."""
         self.environment: Dict[str, str] = {}
         """The environment"""
@@ -65,14 +62,56 @@ class Environment:
         """flags for the Molcas binar"""
         self.molcas_memory: str = "12000"
         """amount available memory for Molca"""
-        self.molcas_scratch_dir: str = ""
+        self.molcas_scratch_dir: str = f"{FileHandler.get_project_path()}/scratch"
         """dir for molcas to store internal stuff"""
         self.molcas_nprocs: str = "1"
         """number of mpi nodes"""
-        if settings_dict is not None:
-            for key in settings_dict:
-                if hasattr(self, key):
-                    setattr(self, key, str(settings_dict[key]))
+
+    def get_nthreads(self) -> str:
+        """Get largest number of defined threads.
+
+        Returns
+        -------
+        str
+            number of threads
+        """
+        # default is single core
+        defaults = int(self.molcas_nprocs)
+        # environment variabels are optional
+        try:
+            omp_threads = int(self._get_value("OMP_NUM_THREADS"))
+        except ValueError:
+            omp_threads = 1
+        try:
+            molcas_nprocs = int(self._get_value('MOLCAS_NPROCS'))
+        except ValueError:
+            molcas_nprocs = 1
+        try:
+            qcmaquis_cpus = int(self._get_value('QCMaquis_CPU'))
+        except ValueError:
+            qcmaquis_cpus = 1
+        n_threads = max(defaults, omp_threads, molcas_nprocs, qcmaquis_cpus)
+        return str(n_threads)
+
+    def _get_value(self, variable_name: str) -> str:
+        """Get value from local environment.
+
+        Parameters
+        ----------
+        environment : Dict[str, str]
+            local environemnt
+        variabel_name: str
+            name of the variable
+
+        Returns
+        -------
+        str
+            variable value
+        """
+        try:
+            return self.environment[variable_name]
+        except KeyError:
+            return ""
 
     def __str__(self) -> str:
         """Print environment.
@@ -82,13 +121,14 @@ class Environment:
         output : str
             the output if class is printed
         """
+
         output = ""
-        output += f"MOLCAS_PROJECT:  {self.project_name}\n"
-        output += f"MOLCAS_MEM:      {self.molcas_memory}\n"
-        output += f"WorkDir:         {self.molcas_scratch_dir}\n"
-        output += f"MOLCAS_NPROCS:   {self.molcas_nprocs}\n"
-        output += f"OMP_NUM_THREADS: {self.molcas_nprocs}\n"
-        output += f"QCMaquis_CPU:    {self.molcas_nprocs}"
+        output += f"MOLCAS_PROJECT:  {self._get_value('MOLCAS_PROJECT')}\n"
+        output += f"MOLCAS_MEM:      {self._get_value('MOLCAS_MEM')}\n"
+        output += f"WorkDir:         {self._get_value('WorkDir')}\n"
+        output += f"MOLCAS_NPROCS:   {self._get_value('MOLCAS_NPROCS')}\n"
+        output += f"OMP_NUM_THREADS: {self._get_value('OMP_NUM_THREADS')}\n"
+        output += f"QCMaquis_CPU:    {self._get_value('QCMaquis_CPU')}"
         return output
 
     def _set_environment(self, envir_string: str, environment_variable: str):
@@ -104,7 +144,26 @@ class Environment:
         if envir_string not in self.environment:
             self.environment[envir_string] = environment_variable
 
-    def make_environment(self, calc_dir: str) -> Dict[str, str]:
+    def check_molcas_exists(self) -> bool:
+        """Validate that pymolcas is in the correct path.
+
+        Returns
+        -------
+        bool
+            True if molcas is found
+
+        Raises
+        ------
+        OSError
+            if pymolcas is not found
+        """
+        if os.path.isfile(self.molcas_binary) and os.access(self.molcas_binary, os.X_OK):
+            return True
+        print("Cannot find molcas binary")
+        print(f"molcas_binary variable is set to {self.molcas_binary}")
+        return False
+
+    def make_environment(self, calc_dir: Optional[str] = None) -> Dict[str, str]:
         """Set up the environment for Molcas.
 
         Parameters
@@ -119,16 +178,17 @@ class Environment:
 
         Raises
         ------
-        EnvironmentError
+        OSError
             if neither molcas_binary, nor the system variable MOLCAS is defined.
         """
         self.environment = os.environ.copy()
+
         if self.molcas_binary != "":
             pass
         elif "MOLCAS" in self.environment:
             self.molcas_binary = self.environment["MOLCAS"] + "/pymolcas"
         else:
-            raise EnvironmentError(
+            raise OSError(
                 """
                 no molcas_binary is set or Molcas is not installed or 'MOLCAS' system variable is not set.
                 Please use the following command: \n
@@ -136,12 +196,27 @@ class Environment:
                 and set the correct path to the molcas build directory.
                 """
             )
+        if not self.check_molcas_exists():
+            raise OSError(
+                """
+                no molcas_binary is set or Molcas is not installed or 'MOLCAS' system variable is not set.
+                Please use the following command: \n
+                export MOLCAS=/path/to/molcas/build \n
+                and set the correct path to the molcas build directory.
+                Ensure that a <pymolcas> binary is inside the build folder.
+                """
+            )
+        print(f"""Found <pymolcas> binary in {self.molcas_binary}""")
         # if not self.molcas_binary:
         self._set_environment("MOLCAS_PROJECT", self.project_name)
         self._set_environment("MOLCAS_MEM", self.molcas_memory)
         # self._set_environment("MOLCAS_WORKDIR", "/tmp")
         self._set_environment("WorkDir", self.molcas_scratch_dir)
-        self._set_environment("MOLCAS_OUTPUT", calc_dir)
+        if calc_dir:
+            self._set_environment("MOLCAS_OUTPUT", calc_dir)
+        else:
+            self._set_environment("MOLCAS_OUTPUT", os.getcwd())
+
         if self.molcas_nprocs != "1":
             self._set_environment("MOLCAS_NPROCS", self.molcas_nprocs)
             self._set_environment("OMP_NUM_THREADS", self.molcas_nprocs)

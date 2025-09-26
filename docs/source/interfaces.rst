@@ -17,18 +17,6 @@ An active space is defined by a list of orbital indices and a list of occupation
 function requires an active space as input and has to return an energy, s1 and s2-entropies and mutual
 information.
 
-Required input settings:
-
-   - basis_set (the basis set)
-   - spin_multiplicity (the spin multiplicity of the system)
-   - charge (the charge of the system)
-   - dmrg_sweeps  (the number of DMRG sweeps)
-   - dmrg_bond_dimension (the DMRG bond dimension)
-   - xyz_file (the path to the molecular XYZ file)
-   - method (the active space method)
-   - post_cas_method (The post-CAS method for dynamic correlation)
-   - work_dir (the path for a work directory to store output files in)
-
 Supported Interfaces
 --------------------
 
@@ -41,21 +29,12 @@ requiring an input file.
 All OpenMolcas specific environment variables can be set trough the environment-directive, which will
 override already set variables from the current session.
 
-Additionally the OpenMolcas interface comes with more settings, namely:
+PySCF
+.....
 
-   - point_group (the point group of the molecule)
-   - cholesky (enable Cholesky decomposition)
-   - uhf (enable unrestricted calculations)
-   - fiedler (enable Fiedler ordering)
-   - ipea (IPEA shift for CASPT2)
-   - only_hf (if only HF should be calculated)
-   - orbital_localisation (if orbitals should be localized)
-   - localisation_space (the localization space)
-   - localisation_method (the localization method)
-   - n_excited_states (the number of excited states)
-   - ci_size (the Davidson size for excited states)
-   - weights (the weight for each root)
-   - roots (which roots should be evaluated)
-
-For further information on point_group, orbital localization or excited states, see the OpenMolcas manual.
+The `PySCF` program package is an electronic structure back-end for autoCAS.
+Since `PySCF` is a python-native program package, the interface can be further utilized.
+The interface stores at every step the current pyscf wave function object, which can be 
+either further utilized or manipulated in other ways, outside of the pre-implemented workflows.
+For information on how to work with pyscf, see the pyscf manual.
 

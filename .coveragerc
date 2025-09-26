@@ -5,11 +5,10 @@ source =
 omit =
     */python?.?/*
     */site-packages/nose/*
-    # ignore _version.py and versioneer.py
-    .*version.*
     *_version.py
     */tests/*
     *serenity*
+    *chronusq*
     *__main__*
 
 exclude_lines =

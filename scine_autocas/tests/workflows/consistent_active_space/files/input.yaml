@@ -1,0 +1,5 @@
+system_names: ["sys1", "sys2"]
+xyz_files: ["n2_0.xyz", "n2_1.xyz"]
+exclude_core: false
+autocas_indices: [1]
+

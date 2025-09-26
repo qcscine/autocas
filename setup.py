@@ -10,10 +10,10 @@ from os import path
 
 from setuptools import find_packages, setup
 
-min_version = (3, 6)
+min_version = (3, 8)
 if sys.version_info < min_version:
     error = """
-AutoCAS does not support Python {0}.{1}.
+SCINE autoCAS does not support Python {0}.{1}.
 Python {2}.{3} and above is required. Check your Python version like so:
 
 python3 --version
@@ -72,6 +72,7 @@ setup(
     entry_points={
         'console_scripts': [
             'scine_autocas = scine_autocas.__main__:main',
+            'scine_autocas_consistent_active_space = scine_autocas.workflows.consistent_active_space.protocol:run_from_command_line',
         ],
     },
     install_requires=requirements,

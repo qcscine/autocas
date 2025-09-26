@@ -1,0 +1,5 @@
+xyz_files: [n2_0.xyz, n2_1.xyz]
+basis_set: cc-pvdz
+unmappable: true
+exclude_core: false
+system_names: [n2_0, n2_1, n2_2]

@@ -1,6 +1,20 @@
 Release History
 ===============
 
+3.0.0
+-----
+
+- Updated the interface to Serenity to be compatible with Serenity 1.6.3.
+- Added interface to PySCF in combination with QCMaquis. 
+- Updated Large-CAS protocol to properly handle S>0 cases.
+- Updated requirements
+- Improved command line interface
+- Added a requirements file for Serenity.
+- The consistent active space protocol is now available directly on the command line
+  by calling `scine_autocas_consistent_active_space`. Options for the protocol can be
+  provided as command line arguments or as a yaml file.
+- AutoCAS now stops if an error is detected in an underlying MOLCAS calculation.
+
 2.3.1
 -----
 
