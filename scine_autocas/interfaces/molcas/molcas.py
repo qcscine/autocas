@@ -313,6 +313,15 @@ class Molcas(Interface):
         input_file = self.project_name + ".input"
 
         self.input_handler.write_input(self.settings, input_file, self.orbital_file)
+        # Ensure formatted SCF orbitals exist in cwd so LUMORB/INPORB resolves
+        try:
+            scf_local = f"{self.project_name}.ScfOrb"
+            if not os.path.exists(scf_local):
+                cand = os.path.join(os.path.dirname(os.getcwd()), "initial", scf_local)
+                if os.path.exists(cand):
+                    shutil.copy(cand, scf_local)
+        except Exception:
+            pass
         # setup environment
         self.environment.project_name = self.project_name
         environment = self.environment.make_environment()
