@@ -10,6 +10,7 @@ See LICENSE.txt for details.
 """
 
 import io
+import os
 # rename class and corresponding file
 from typing import Any, Optional
 
@@ -73,7 +74,7 @@ class InputHandler:
         input_file.write(f"  SPIN    = {settings.get_molecule().spin_multiplicity}\n")
         input_file.write(f"  NACTEL  = {settings.active_electrons}\n")
         if orbital_file:
-            input_file.write(f"  FILEORB = {orbital_file}\n")
+            input_file.write(f"  FILEORB = {os.path.basename(orbital_file)}\n")
             if not alter:
                 input_file.write("  TYPEINDEX\n")
             else:
@@ -103,6 +104,9 @@ class InputHandler:
             a string to reorder orbitals, instead of doing that in the orbital file
         """
         input_file.write("&DMRGSCF\n")
+        # Ensure formatted starting orbitals are used by Molcas DMRG
+        input_file.write("LUMORB\n")
+        input_file.write("StartOrb = INPORB\n")
         if settings.fiedler:
             input_file.write("  FIEDLER=ON\n")
         input_file.write("ActiveSpaceOptimizer = QCMaquis\n")
@@ -114,7 +118,7 @@ class InputHandler:
         input_file.write(f"  SPIN    = {settings.get_molecule().spin_multiplicity}\n")
         input_file.write(f"  NACTEL  = {settings.active_electrons}\n")
         if orbital_file:
-            input_file.write(f"  FILEORB = {orbital_file}\n")
+            input_file.write(f"  FILEORB = {os.path.basename(orbital_file)}\n")
             if not alter:
                 input_file.write("  TYPEINDEX\n")
             else:
